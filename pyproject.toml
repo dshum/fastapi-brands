@@ -1,0 +1,25 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Denis Shumeev", email = "denis-shumeev@yandex.ru"},
+]
+dependencies = [
+    "requests>=2.31.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.23.2",
+    "jinja2>=3.1.2",
+    "sqlalchemy>=2.0.22",
+    "pydantic-settings>=2.0.3",
+    "sentry-sdk>=1.32.0",
+    "asyncpg>=0.28.0",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest>=7.4.2",
+]

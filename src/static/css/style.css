@@ -1,0 +1,21 @@
+html, body {
+  font-family: "Cabin", sans-serif;
+}
+
+body {
+  overflow-y: scroll;
+}
+
+h1, h2, h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-family: "Lora", sans-serif;
+  font-weight: normal;
+  color: deeppink;
+}
+
+/* Alpine.js */
+
+[x-cloak] {
+  display: none !important;
+}
