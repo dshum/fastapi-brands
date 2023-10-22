@@ -1,1 +1,1 @@
-# example-package
+# fastapi-brands
