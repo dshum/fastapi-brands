@@ -6,7 +6,7 @@ from repositories.brands import BrandRepository
 
 
 class IUnitOfWork(ABC):
-    brands: BrandRepository
+    brands: Type[BrandRepository]
 
     @abstractmethod
     def __init__(self):
