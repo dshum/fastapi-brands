@@ -13,15 +13,10 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[BrandDTO])
-async def list(uow: UOW, params: List[str] = Query(None)) -> list[BrandDTO]:
-    return await BrandService().list(uow, params)
+async def list(uow: UOW) -> list[BrandDTO]:
+    return await BrandService().list(uow)
 
 
-@router.get("/{name}", response_model=BrandDTO)
-async def get(uow: UOW, name: str) -> BrandDTO:
-    return await BrandService().get(uow, name)
-
-
-@router.get("/params/", response_model=List[str])
+@router.get("/settings/", response_model=List[str])
 async def params(uow: UOW, ) -> List[str]:
-    return await BrandService().get_params(uow)
+    return await BrandService().get_settings(uow)

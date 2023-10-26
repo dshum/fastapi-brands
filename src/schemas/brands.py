@@ -6,9 +6,11 @@ from pydantic import BaseModel, Field
 class BrandDTO(BaseModel):
     name: str
     hosts: str
-    settings: Optional[Dict[str, Any]] = None
+    status: str
     db_name: str
     created_at: str = Field()
+    updated_at: str = Field()
+    settings: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True

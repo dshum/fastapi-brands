@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Type
 
 from lib.database import async_session_maker
+from lib.repository import AbstractRepository
 from repositories.brands import BrandRepository
 
 
 class IUnitOfWork(ABC):
-    brands: Type[BrandRepository]
+    brands: AbstractRepository
 
     @abstractmethod
     def __init__(self):
