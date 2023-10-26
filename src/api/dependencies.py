@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from services.unitofwork import IUnitOfWork, UnitOfWork
+from services.unitofwork import IUnitOfWork, LocalUnitOfWork, RemoteUnitOfWork
 
-UOW = Annotated[IUnitOfWork, Depends(UnitOfWork)]
+LocalUOW = Annotated[IUnitOfWork, Depends(LocalUnitOfWork)]
+RemoteUOW = Annotated[IUnitOfWork, Depends(LocalUnitOfWork)]
 
-__all__ = ["UOW"]
+__all__ = ["LocalUOW", "RemoteUOW"]

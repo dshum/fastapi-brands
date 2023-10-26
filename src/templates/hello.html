@@ -11,12 +11,16 @@
   <script src="{{ url_for('static', path='/bootstrap-5.3.2/js/bootstrap.bundle.min.js') }}"></script>
   <script src="//unpkg.com/alpinejs" defer></script>
   <style>
+    .bg-default {
+      background-color: #F8F6F4 !important;
+    }
+
     .bg-extra {
       background-color: #D2E9E9 !important;
     }
 
     .bg-settings {
-      background-color: #F8F6F4 !important;
+      background-color: floralwhite !important;
     }
   </style>
 </head>
@@ -69,9 +73,7 @@
     <table x-cloak="true" x-show="brands.length" x-transition class="table">
       <thead>
       <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Hosts</th>
-        <th scope="col">DB Name</th>
+        <th scope="col" class="bg-default">Name</th>
         <template x-for="key in selectedExtraColumns">
           <th scope="col" class="bg-extra text-nowrap">
             <div class="d-flex justify-content-between gap-2">
@@ -95,11 +97,9 @@
       <tbody>
       <template x-for="brand in brands">
         <tr x-show="showItem($el)">
-          <td x-text="brand.name"></td>
-          <td x-text="brand.hosts"></td>
-          <td x-text="brand.db_name"></td>
+          <td x-text="brand.name" class="bg-default"></td>
           <template x-for="column in selectedExtraColumns">
-            <td x-text="brand[column] || null" class="bg-extra text-nowrap"></td>
+            <td x-text="brand[column] || null" class="bg-extra"></td>
           </template>
           <template x-for="column in selectedSettingsColumns">
             <td x-text="brand.settings[column] || null" class="bg-settings text-break"></td>
@@ -127,11 +127,13 @@
         brands: [],
         search: "",
         extraColumns: {
+          "hosts": "Hosts",
+          "db_name": "DB Name",
           "status": "Status",
           "created_at": "Created At",
           "updated_at": "Updated At"
         },
-        selectedExtraColumns: [],
+        selectedExtraColumns: ["hosts", "db_name",],
         settingsColumns: [],
         selectedSettingsColumns: [],
         showItem(el) {

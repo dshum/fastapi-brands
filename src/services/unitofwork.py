@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Type
 
-from lib.database import async_session_maker
+from lib.database import local_async_session_maker, remote_async_session_maker
 from lib.repository import AbstractRepository
 from repositories.brands import BrandRepository
 
@@ -30,13 +30,31 @@ class IUnitOfWork(ABC):
         raise NotImplementedError
 
 
-class UnitOfWork:
+class LocalUnitOfWork:
     def __init__(self):
-        self.session_factory = async_session_maker
+        self.session_factory = local_async_session_maker
 
     async def __aenter__(self):
         self.session = self.session_factory()
         self.brands = BrandRepository(self.session)
+
+    async def __aexit__(self, *args):
+        await self.rollback()
+        await self.session.close()
+
+    async def commit(self):
+        await self.session.commit()
+
+    async def rollback(self):
+        await self.session.rollback()
+
+
+class RemoteUnitOfWork:
+    def __init__(self):
+        self.session_factory = remote_async_session_maker
+
+    async def __aenter__(self):
+        self.session = self.session_factory()
 
     async def __aexit__(self, *args):
         await self.rollback()
