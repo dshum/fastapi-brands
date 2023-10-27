@@ -12,15 +12,15 @@
   <script src="//unpkg.com/alpinejs" defer></script>
   <style>
     .bg-default {
-      background-color: #F8F6F4 !important;
+      background-color: #F9F7F5 !important;
     }
 
     .bg-extra {
-      background-color: #D2E9E9 !important;
+      background-color: #F3F9F7 !important;
     }
 
     .bg-settings {
-      background-color: floralwhite !important;
+      background-color: #F7F3F9 !important;
     }
   </style>
 </head>
@@ -99,7 +99,7 @@
         <tr x-show="showItem($el)">
           <td x-text="brand.name" class="bg-default"></td>
           <template x-for="column in selectedExtraColumns">
-            <td x-text="brand[column] || null" class="bg-extra"></td>
+            <td x-html="brandValue(brand, column) || null" class="bg-extra"></td>
           </template>
           <template x-for="column in selectedSettingsColumns">
             <td x-text="brand.settings[column] || null" class="bg-settings text-break"></td>
@@ -161,6 +161,15 @@
             this.selectedSettingsColumns = this.selectedSettingsColumns.filter(e => e !== key)
           }
         },
+        brandValue(row, key) {
+          if (key === 'hosts') {
+            const hosts = row[key].split(",")
+            const map = hosts.map((x) => '<a href="https://' + x.trim() + '" target="__blank">' + x.trim() + '</a>');
+            return map.join(", ");
+          }
+
+          return row[key]
+        }
       }
     }
   </script>
