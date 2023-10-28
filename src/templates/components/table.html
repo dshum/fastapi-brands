@@ -1,0 +1,66 @@
+<table x-data="table" class="table">
+  <thead>
+  <tr>
+    <th scope="col" class="bg-default">Name</th>
+    <template x-for="key in selectedExtraColumns">
+      <th scope="col" class="bg-extra text-nowrap">
+        <div class="d-flex justify-content-between gap-2">
+          <span x-text="extraColumns[key]"></span>
+          <span type="button" class="bg-dark-subtle btn-close" aria-label="Close"
+                @click="removeSelectedExtraColumn(key)"></span>
+        </div>
+      </th>
+    </template>
+    <template x-for="key in selectedSettingsColumns">
+      <th scope="col" class="bg-settings text-nowrap">
+        <div class="d-flex justify-content-between gap-2">
+          <span x-text="key"></span>
+          <span type="button" class="bg-danger-subtle text-light btn-close" aria-label="Close"
+                @click="removeSelectedSettingsColumn(key)"></span>
+        </div>
+      </th>
+    </template>
+  </tr>
+  </thead>
+  <tbody>
+  <template x-for="brand in brands">
+    <tr x-show="showItem($el)">
+      <td x-text="brand.name" class="bg-default"></td>
+      <template x-for="column in selectedExtraColumns">
+        <td x-html="brandValue(brand, column) || null" class="bg-extra"></td>
+      </template>
+      <template x-for="column in selectedSettingsColumns">
+        <td x-text="brand.settings[column] || null" class="bg-settings text-break"></td>
+      </template>
+    </tr>
+  </template>
+  </tbody>
+</table>
+
+<script>
+  function table() {
+    return {
+      showItem(el) {
+        return this.search === "" || el.textContent.includes(this.search)
+      },
+      removeSelectedExtraColumn(key) {
+        if (this.selectedExtraColumns.includes(key)) {
+          this.selectedExtraColumns = this.selectedExtraColumns.filter(e => e !== key)
+        }
+      },
+      removeSelectedSettingsColumn(key) {
+        if (this.selectedSettingsColumns.includes(key)) {
+          this.selectedSettingsColumns = this.selectedSettingsColumns.filter(e => e !== key)
+        }
+      },
+      brandValue(row, key) {
+        if (key === 'hosts') {
+          const hosts = row[key].split(",")
+          const map = hosts.map((x) => '<a href="https://' + x.trim() + '" target="__blank">' + x.trim() + '</a>');
+          return map.join(", ");
+        }
+        return row[key]
+      }
+    }
+  }
+</script>

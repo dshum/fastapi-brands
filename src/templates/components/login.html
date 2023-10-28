@@ -1,0 +1,73 @@
+<div x-data="loginForm" class="row">
+  <div class="col-12 col-md-6">
+    <div class="alert alert-danger" role="alert"
+         x-cloak="true" x-show="formMessage" x-text="formMessage"></div>
+
+    <form @submit.prevent="submitForm" autocomplete="on">
+      <div class="mb-3">
+        <label for="username" class="form-label">Email</label>
+        <input type="email" name="username" class="form-control" id="username" autocomplete="true"
+               x-model="formData.username">
+        <div id="usernameError" class="form-text text-danger" x-text="formErrors.username"></div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" autocomplete="true"
+               x-model="formData.password">
+        <div id="passwordError" class="form-text text-danger" x-text="formErrors.password"></div>
+      </div>
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const AUTH_URL = "/auth/jwt/login"
+
+  function loginForm() {
+    return {
+      formMessage: "",
+      formErrors: {},
+      formData: {
+        username: "",
+        password: ""
+      },
+      submitForm() {
+        this.formMessage = ""
+
+        const formData = new FormData();
+        formData.append("username", this.formData.username)
+        formData.append("password", this.formData.password)
+
+        fetch(AUTH_URL, {
+          method: "POST",
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(response => this.validate(response))
+          .then(response => {
+            localStorage.jwt = response.access_token
+            this.auth()
+          })
+          .catch(error => {
+            console.log(error)
+          });
+      },
+      validate(response) {
+        this.formErrors = {}
+        if (response.detail) {
+          if (response.detail === "LOGIN_BAD_CREDENTIALS") {
+            this.formMessage = "Wrong email or password"
+          }
+          response.detail.forEach((error) => {
+            this.formErrors[error.loc[1]] = error.msg
+          });
+          throw new Error("Invalid fields")
+        }
+        return response
+      }
+    }
+  }
+</script>

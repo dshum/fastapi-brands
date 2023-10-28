@@ -10,120 +10,58 @@
   <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
   <script src="{{ url_for('static', path='/bootstrap-5.3.2/js/bootstrap.bundle.min.js') }}"></script>
   <script src="//unpkg.com/alpinejs" defer></script>
-  <style>
-    .bg-default {
-      background-color: #F9F7F5 !important;
-    }
-
-    .bg-extra {
-      background-color: #F3F9F7 !important;
-    }
-
-    .bg-settings {
-      background-color: #F7F3F9 !important;
-    }
-  </style>
+  <script src="{{ url_for('static', path='/js/app.js') }}"></script>
 </head>
 <body>
 <div class="container">
   <h1>Brands</h1>
 
-  <div x-data="brands()" x-init="initBrands()">
-    <div class="row">
-      <div class="col-md-4">
-        <div class="form-floating my-3">
-          <input type="search" class="form-control" id="search" placeholder="Start typing..."
-                 aria-describedby="search"
-                 x-model="search">
-          <label for="search">Start typing...</label>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="my-3">
-          <div class="form-floating">
-            <select class="form-select" id="floatingSelect"
-                    aria-label="Add extra columns"
-                    @change="addExtraColumn($el)">
-              <option value="" selected>- Select column -</option>
-              <template x-for="(value, key) in extraColumns">
-                <option :value="key" x-text="value"></option>
-              </template>
-            </select>
-            <label for="floatingSelect">Add extra columns</label>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="my-3">
-          <div class="form-floating">
-            <select class="form-select" id="floatingSelect"
-                    aria-label="Add extra settings"
-                    @change="addSettingsColumn($el)">
-              <option value="" selected>- Select param -</option>
-              <template x-for="column in settingsColumns">
-                <option :value="column" x-text="column"></option>
-              </template>
-            </select>
-            <label for="floatingSelect">Add extra settings</label>
-          </div>
-        </div>
-      </div>
+  <div x-data="brands()">
+    <div x-cloak="true" x-show="showLogin">
+      {% include "components/login.html" %}
     </div>
 
-    <table x-cloak="true" x-show="brands.length" x-transition class="table">
-      <thead>
-      <tr>
-        <th scope="col" class="bg-default">Name</th>
-        <template x-for="key in selectedExtraColumns">
-          <th scope="col" class="bg-extra text-nowrap">
-            <div class="d-flex justify-content-between gap-2">
-              <span x-text="extraColumns[key]"></span>
-              <span type="button" class="bg-dark-subtle btn-close" aria-label="Close"
-                    @click="removeSelectedExtraColumn(key)"></span>
-            </div>
-          </th>
-        </template>
-        <template x-for="key in selectedSettingsColumns">
-          <th scope="col" class="bg-settings text-nowrap">
-            <div class="d-flex justify-content-between gap-2">
-              <span x-text="key"></span>
-              <span type="button" class="bg-danger-subtle text-light btn-close" aria-label="Close"
-                    @click="removeSelectedSettingsColumn(key)"></span>
-            </div>
-          </th>
-        </template>
-      </tr>
-      </thead>
-      <tbody>
-      <template x-for="brand in brands">
-        <tr x-show="showItem($el)">
-          <td x-text="brand.name" class="bg-default"></td>
-          <template x-for="column in selectedExtraColumns">
-            <td x-html="brandValue(brand, column) || null" class="bg-extra"></td>
-          </template>
-          <template x-for="column in selectedSettingsColumns">
-            <td x-text="brand.settings[column] || null" class="bg-settings text-break"></td>
-          </template>
-        </tr>
-      </template>
-      </tbody>
-    </table>
+    <div x-cloak="true" x-show="showSettings">
+      {% include "components/settings.html" %}
+    </div>
+
+    <div x-cloak="true" x-show="showTable" x-transition>
+      {% include "components/table.html" %}
+    </div>
   </div>
 
   <script>
+    const AUTH_ME_URL = "/auth/me"
     const BRANDS_URL = "/brands/"
-    const BRANDS_PARAMS_URL = "/brands/settings/"
-
-    function initBrands() {
-
-    }
+    const BRANDS_SETTINGS_URL = "/brands/settings/"
 
     function brands() {
       return {
         async init() {
-          this.brands = await (await fetch(BRANDS_URL)).json()
-          this.settingsColumns = await (await fetch(BRANDS_PARAMS_URL)).json()
+          await this.auth()
         },
+        async auth() {
+          this.user = await (await fetcher(AUTH_ME_URL)
+            .then(response => {
+              if (response.status === 401) {
+                this.showLogin = true
+                throw new Error()
+              }
+              return response
+            })).json()
+
+          if (this.user) {
+            this.showLogin = false
+            this.brands = await (await fetcher(BRANDS_URL)).json()
+            this.settingsColumns = await (await fetcher(BRANDS_SETTINGS_URL)).json()
+            this.showSettings = true
+            this.showTable = true
+          }
+        },
+        user: null,
+        showLogin: false,
+        showSettings: false,
+        showTable: false,
         brands: [],
         search: "",
         extraColumns: {
@@ -133,43 +71,9 @@
           "created_at": "Created At",
           "updated_at": "Updated At"
         },
-        selectedExtraColumns: ["hosts", "db_name",],
         settingsColumns: [],
+        selectedExtraColumns: ["hosts", "db_name",],
         selectedSettingsColumns: [],
-        showItem(el) {
-          return this.search === "" || el.textContent.includes(this.search)
-        },
-        addExtraColumn(el) {
-          if (!this.selectedExtraColumns.includes(el.value)) {
-            this.selectedExtraColumns.push(el.value)
-          }
-          el.value = ""
-        },
-        removeSelectedExtraColumn(key) {
-          if (this.selectedExtraColumns.includes(key)) {
-            this.selectedExtraColumns = this.selectedExtraColumns.filter(e => e !== key)
-          }
-        },
-        addSettingsColumn(el) {
-          if (!this.selectedSettingsColumns.includes(el.value)) {
-            this.selectedSettingsColumns.push(el.value)
-          }
-          el.value = ""
-        },
-        removeSelectedSettingsColumn(key) {
-          if (this.selectedSettingsColumns.includes(key)) {
-            this.selectedSettingsColumns = this.selectedSettingsColumns.filter(e => e !== key)
-          }
-        },
-        brandValue(row, key) {
-          if (key === 'hosts') {
-            const hosts = row[key].split(",")
-            const map = hosts.map((x) => '<a href="https://' + x.trim() + '" target="__blank">' + x.trim() + '</a>');
-            return map.join(", ");
-          }
-
-          return row[key]
-        }
       }
     }
   </script>

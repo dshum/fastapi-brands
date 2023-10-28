@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Type
 
 from lib.database import local_async_session_maker, remote_async_session_maker
 from lib.repository import AbstractRepository
@@ -55,6 +54,7 @@ class RemoteUnitOfWork:
 
     async def __aenter__(self):
         self.session = self.session_factory()
+        self.brands = BrandRepository(self.session)
 
     async def __aexit__(self, *args):
         await self.rollback()

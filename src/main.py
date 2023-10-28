@@ -21,6 +21,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-@app.get("/")
+@app.get("/", tags=["Default"])
 async def hello(request: Request):
     return templates.TemplateResponse("hello.html", context={"request": request})
