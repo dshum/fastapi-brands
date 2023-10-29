@@ -1,6 +1,4 @@
-from typing import Optional, List
-
-from sqlalchemy import select, column
+from sqlalchemy import select, cast
 from sqlalchemy.dialects.postgresql import JSONB
 
 from lib.repository import SQLAlchemyRepository
@@ -14,7 +12,7 @@ class BrandRepository(SQLAlchemyRepository):
         columns = []
         for column in self.model.__table__.columns:
             if column.key == 'settings':
-                column = column['settings'].label('settings')
+                column = cast(column, JSONB)['settings'].label('settings')
             columns.append(column)
 
         query = select(*columns).order_by(self.model.name.asc())
@@ -22,6 +20,6 @@ class BrandRepository(SQLAlchemyRepository):
         return res.mappings().all()
 
     async def get_settings(self):
-        query = select(self.model.settings['settings']).order_by(self.model.name.asc())
+        query = select(cast(self.model.settings, JSONB)['settings']).order_by(self.model.name.asc())
         res = await self.session.execute(query)
         return res.all()

@@ -33,5 +33,16 @@ services:
     restart: unless-stopped
     tty: true
 
+  redis:
+    container_name: brands-redis
+    image: redis:latest
+    volumes:
+      - cache:/data
+    ports:
+      - "${REDIS_EXTERNAL_PORT:-6379}:6379"
+    restart: unless-stopped
+    tty: true
+
 volumes:
   postgres_data: { }
+  cache: { }

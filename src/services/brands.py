@@ -1,20 +1,21 @@
 from datetime import datetime
-from typing import Optional, List
 
-from fastapi import HTTPException
+from aiocache import cached
 
-from services.unitofwork import IUnitOfWork
 from schemas.brands import BrandDTO
+from services.unitofwork import IUnitOfWork
 
 
 class BrandService:
     @staticmethod
+    @cached(ttl=3600, key="list", namespace="brands")
     async def list(uow: IUnitOfWork):
         async with uow:
             brands = await uow.brands.list()
             return [BrandService.row_to_dto(**brand) for brand in brands]
 
     @staticmethod
+    @cached(ttl=3600, key="settings", namespace="brands")
     async def get_settings(uow: IUnitOfWork):
         async with uow:
             brands = await uow.brands.get_settings()
