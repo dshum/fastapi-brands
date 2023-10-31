@@ -8,5 +8,5 @@ server = SSHTunnelForwarder(
     ssh_pkey=settings.ssh.KEY,
     ssh_private_key_password=settings.ssh.SECRET,
     remote_bind_address=(settings.ssh.PRIVATE_SERVER, 5432),
-    local_bind_address=("localhost", 6432)
+    local_bind_address=("localhost", 6432),
 )

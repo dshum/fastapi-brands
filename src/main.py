@@ -12,14 +12,16 @@ from lib.ssh import server
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    sentry.configure()
+    cache.configure()
     server.start()
+    await database.startup()
     yield
     server.stop()
 
 
 app = FastAPI(
     debug=settings.app.DEBUG,
-    on_startup=(sentry.configure, database.startup, cache.configure),
     exception_handlers=exception_handlers(),
     lifespan=lifespan,
 )

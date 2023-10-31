@@ -29,6 +29,6 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 async def startup():
     async with local_engine.begin() as conn:
+        pass
         # await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    pass
+        # await conn.run_sync(Base.metadata.create_all)
