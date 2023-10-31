@@ -14,10 +14,6 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_settings(self):
-        raise NotImplementedError
-
-    @abstractmethod
     async def get(self, id: int):
         raise NotImplementedError
 
@@ -45,9 +41,6 @@ class SQLAlchemyRepository(AbstractRepository):
         query = select(self.model).order_by(self.model.id.desc())
         res = await self.session.scalars(query)
         return [row for row in res.all()]
-
-    async def get_settings(self):
-        pass
 
     async def get(self, id: int):
         res = await self.session.get(self.model, id)

@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import Type
 
 from lib.database import local_async_session_maker, remote_async_session_maker
-from lib.repository import AbstractRepository
 from lib.ssh import server
+from repositories.abstract.brands import AbstractRepository
 from repositories.brands import BrandRepository
 
 
